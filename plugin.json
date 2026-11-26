@@ -1,0 +1,19 @@
+{
+	"name": "Nera Credit Page",
+	"slug": "nera-credit-page",
+	"version": "1.0.0",
+	"homepage": "https://github.com/Nera-Marketing/nera-credit-page-plugin",
+	"download_url": "https://github.com/Nera-Marketing/nera-credit-page-plugin/releases/download/v1.0.0/nera-credit-page-1.0.0.zip",
+	"author": "Nera Marketing",
+	"author_homepage": "https://github.com/Nera-Marketing",
+	"requires": "6.0",
+	"tested": "6.8",
+	"requires_php": "7.4",
+	"last_updated": "2026-11-26 00:00:00",
+	"upgrade_notice": "Update to the latest release for bug fixes.",
+	"sections": {
+		"description": "<p>Serves the Nera Marketing credit page at the theme's attribution URL while switched on.</p>",
+		"installation": "<p>Upload and activate <strong>Nera Credit Page</strong>, then switch the page on in its settings.</p>",
+		"changelog": "<p>Release notes: <a href=\"https://github.com/Nera-Marketing/nera-credit-page-plugin/releases\">GitHub releases</a>.</p>"
+	}
+}
