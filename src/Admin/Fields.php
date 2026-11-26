@@ -34,6 +34,7 @@ final class Fields {
 		add_action( 'acf/init', array( __CLASS__, 'register' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'hide_menu' ), 999 );
 		add_filter( 'acf/validate_value/key=field_ncp_case_study_url', array( __CLASS__, 'validate_case_study_url' ), 10, 2 );
+		add_filter( 'acf/validate_value/key=field_ncp_credit_url', array( __CLASS__, 'validate_credit_url' ), 10, 2 );
 		add_filter( 'acf/load_value/key=field_ncp_faqs', array( __CLASS__, 'default_faqs' ), 20, 2 );
 		add_action( 'acf/save_post', array( __CLASS__, 'before_save' ), 1 );
 		add_action( 'acf/save_post', array( __CLASS__, 'after_save' ), 20 );
@@ -118,7 +119,7 @@ final class Fields {
 				'label'   => '',
 				'name'    => '',
 				'type'    => 'message',
-				'message' => __( '{Client} in any field is replaced with the client name. A blank badge, address, eyebrow, heading, paragraph or link label hides it on the page; a blank main heading, page title or meta description shows the default one. Questions with no rows hide the Questions section, and a row missing its question or answer is not shown.', 'nera-credit-page' ),
+				'message' => __( '{Client} in any field is replaced with the client name. A blank badge, address, eyebrow, heading, paragraph or link label hides it on the page; a blank main heading, page title or meta description shows the default one. Questions with no rows hide the Questions section, and a row missing its question or answer is not shown. The Questions intro, CTA and Credit bar fields are empty by default, so they stay hidden until filled.', 'nera-credit-page' ),
 			),
 			array(
 				'key'           => 'field_ncp_enabled',
@@ -167,6 +168,7 @@ final class Fields {
 			self::tab( 'faq', __( 'Questions', 'nera-credit-page' ) ),
 			self::copy( 'faq_eyebrow', $eyebrow, 'text', $eyebrow_help ),
 			self::copy( 'faq_heading', $heading, 'text', $hides ),
+			self::copy( 'faq_intro', __( 'Intro', 'nera-credit-page' ), 'textarea', $hides ),
 			array(
 				'key'          => 'field_ncp_faqs',
 				'label'        => __( 'Questions and answers', 'nera-credit-page' ),
@@ -199,6 +201,22 @@ final class Fields {
 		$fields[] = self::copy( 'services_link_label', __( 'Services link label', 'nera-credit-page' ), 'text', $hides );
 		$fields[] = self::copy( 'case_study_label', __( 'Case study link label', 'nera-credit-page' ), 'text', __( 'Shown only when the Case study URL is set.', 'nera-credit-page' ) );
 		$fields[] = self::copy( 'home_link_label', __( 'Home link label', 'nera-credit-page' ), 'text', $hides );
+
+		$fields[] = self::tab( 'cta', __( 'CTA', 'nera-credit-page' ) );
+		$fields[] = self::copy( 'cta_watermark', __( 'Watermark text', 'nera-credit-page' ), 'text', __( 'Large faded word behind the button band. Leave blank to hide it.', 'nera-credit-page' ) );
+		$fields[] = array_merge( self::copy( 'cta_heading', $heading, 'textarea', __( 'Each line break starts a new line. Leave blank to hide it.', 'nera-credit-page' ) ), array( 'rows' => 3 ) );
+		$fields[] = self::copy( 'cta_subtitle', __( 'Subtitle', 'nera-credit-page' ), 'textarea', $hides );
+
+		$fields[] = self::tab( 'credit', __( 'Credit bar', 'nera-credit-page' ) );
+		$fields[] = self::copy( 'credit_text', __( 'Text', 'nera-credit-page' ), 'textarea', __( 'The bar at the bottom of the page shows when the text or the badge label is set. Leave blank to hide it.', 'nera-credit-page' ) );
+		$fields[] = self::copy( 'credit_badge_label', __( 'Badge label', 'nera-credit-page' ), 'text', $hides );
+		$fields[] = array(
+			'key'          => 'field_ncp_credit_url',
+			'label'        => __( 'URL', 'nera-credit-page' ),
+			'name'         => 'ncp_credit_url',
+			'type'         => 'url',
+			'instructions' => __( 'A full https:// address makes the badge a link. Leave blank to hide the link.', 'nera-credit-page' ),
+		);
 
 		$fields[] = self::tab( 'seo', __( 'SEO', 'nera-credit-page' ) );
 		$fields[] = self::copy( 'seo_title', __( 'Page Title', 'nera-credit-page' ), 'text', __( 'Browser tab title and WebPage schema name.', 'nera-credit-page' ) );
@@ -283,14 +301,22 @@ final class Fields {
 	 * @return mixed
 	 */
 	public static function validate_case_study_url( $valid, $value ) {
-		if ( true !== $valid || ! is_string( $value ) || '' === trim( $value ) ) {
+		if ( true !== $valid || ! is_string( $value ) || '' === trim( $value ) || Content::is_https_url( $value ) ) {
 			return $valid;
 		}
-		$parts = wp_parse_url( trim( $value ) );
-		if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || 'https' !== strtolower( $parts['scheme'] ) || empty( $parts['host'] ) ) {
-			return __( 'The case study URL must be a full https:// address.', 'nera-credit-page' );
+		return __( 'The case study URL must be a full https:// address.', 'nera-credit-page' );
+	}
+
+	/**
+	 * @param mixed $valid Current result.
+	 * @param mixed $value Submitted value.
+	 * @return mixed
+	 */
+	public static function validate_credit_url( $valid, $value ) {
+		if ( true !== $valid || ! is_string( $value ) || '' === trim( $value ) || Content::is_https_url( $value ) ) {
+			return $valid;
 		}
-		return $valid;
+		return __( 'The URL must be a full https:// address.', 'nera-credit-page' );
 	}
 
 	/**

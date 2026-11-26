@@ -68,6 +68,13 @@ final class Content {
 			'home_link_url'       => 'https://neramarketing.co.uk/',
 			'seo_title'           => 'Website credits | {Client}',
 			'seo_description'     => "{Client}'s website was designed and built by Nera Marketing, an ecommerce agency that builds platforms for businesses that sell at volume.",
+			'faq_intro'           => '',
+			'cta_watermark'       => '',
+			'cta_heading'         => '',
+			'cta_subtitle'        => '',
+			'credit_text'         => '',
+			'credit_badge_label'  => '',
+			'credit_url'          => '',
 		);
 	}
 
@@ -115,13 +122,23 @@ final class Content {
 	}
 
 	/**
+	 * A field's non-empty lines, trimmed, with the client name filled in.
+	 *
+	 * @param string $key Field key.
+	 * @return array<int,string>
+	 */
+	public static function lines( $key ) {
+		return array_values( array_filter( array_map( 'trim', preg_split( '/\R/', self::get( $key ) ) ), 'strlen' ) );
+	}
+
+	/**
 	 * A heading with one line per row: rows are joined with <br> and the last one is in the brand colour.
 	 *
 	 * @param string $key Field key.
 	 * @return string Escaped HTML.
 	 */
 	public static function heading_html( $key ) {
-		$lines = array_values( array_filter( array_map( 'trim', preg_split( '/\R/', self::get( $key ) ) ), 'strlen' ) );
+		$lines = self::lines( $key );
 		if ( ! $lines ) {
 			return '';
 		}
@@ -131,6 +148,29 @@ final class Content {
 			$html .= esc_html( $line ) . '<br>';
 		}
 		return $html . '<span class="text-primary">' . esc_html( $last ) . '</span>';
+	}
+
+	/**
+	 * A URL field's saved value when it is a full https address, else empty.
+	 *
+	 * @param string $key Field key.
+	 * @return string Unescaped URL.
+	 */
+	public static function https_url( $key ) {
+		$url = trim( self::raw( $key ) );
+		return self::is_https_url( $url ) ? $url : '';
+	}
+
+	/**
+	 * @param mixed $url Value to test.
+	 * @return bool
+	 */
+	public static function is_https_url( $url ) {
+		if ( ! is_string( $url ) || '' === trim( $url ) ) {
+			return false;
+		}
+		$parts = wp_parse_url( trim( $url ) );
+		return is_array( $parts ) && ! empty( $parts['scheme'] ) && 'https' === strtolower( $parts['scheme'] ) && ! empty( $parts['host'] );
 	}
 
 	/**

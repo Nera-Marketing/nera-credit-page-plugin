@@ -4,6 +4,8 @@
  *
  * Section markup and utility classes follow the theme's attribution page so the
  * theme bundle and child overrides scoped on .nera-attribution-page still apply.
+ * Optional blocks open and close their PHP tags at column 0, so the page prints
+ * the same whitespace when they are empty.
  *
  * @package Nera\CreditPage
  */
@@ -23,6 +25,14 @@ $nera_credit_links = array(
 	array( 'case_study_label', 'case_study_url' ),
 	array( 'home_link_label', 'home_link_url' ),
 );
+
+$nera_credit_watermark   = Content::get( 'cta_watermark' );
+$nera_credit_cta_lines   = Content::lines( 'cta_heading' );
+$nera_credit_subtitle    = Content::get( 'cta_subtitle' );
+$nera_credit_text        = Content::get( 'credit_text' );
+$nera_credit_badge       = Content::get( 'credit_badge_label' );
+$nera_credit_href        = Content::https_url( 'credit_url' );
+$nera_credit_badge_class = "inline-flex items-center gap-2 bg-gray-50 border border-gray-200 px-4 py-2 rounded-sm text-xs font-bold tracking-widest uppercase text-text-secondary before:content-[''] before:w-2 before:h-2 before:bg-primary before:rounded-[1px] before:shrink-0";
 
 get_header();
 ?>
@@ -84,20 +94,24 @@ get_header();
 	<?php endforeach; ?>
 
 	<?php
-	$nera_credit_faqs = Content::faqs();
+	$nera_credit_faqs      = Content::faqs();
+	$nera_credit_faq_intro = Content::get( 'faq_intro' );
 	if ( $nera_credit_faqs ) :
 		?>
 	<section class="py-16 lg:py-24 border-b border-gray-200 bg-secondary">
 		<div class="max-w-7xl mx-auto px-4 lg:px-0">
 
-			<?php if ( '' !== Content::get( 'faq_eyebrow' ) || '' !== Content::get( 'faq_heading' ) ) : ?>
+			<?php if ( '' !== Content::get( 'faq_eyebrow' ) || '' !== Content::get( 'faq_heading' ) || '' !== $nera_credit_faq_intro ) : ?>
 			<div class="mb-12" data-aos="fade-up">
 				<?php if ( '' !== Content::get( 'faq_eyebrow' ) ) : ?>
 				<span class="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block"><?php echo esc_html( Content::get( 'faq_eyebrow' ) ); ?></span>
 				<?php endif; ?>
 				<?php if ( '' !== Content::get( 'faq_heading' ) ) : ?>
-				<h2 class="text-3xl lg:text-4xl font-bold text-text-primary leading-tight"><?php echo esc_html( Content::get( 'faq_heading' ) ); ?></h2>
+				<h2 class="text-3xl lg:text-4xl font-bold text-text-primary leading-tight<?php echo '' !== $nera_credit_faq_intro ? ' mb-3' : ''; ?>"><?php echo esc_html( Content::get( 'faq_heading' ) ); ?></h2>
 				<?php endif; ?>
+<?php if ( '' !== $nera_credit_faq_intro ) : ?>
+				<p class="text-text-secondary text-sm font-light max-w-lg"><?php echo esc_html( $nera_credit_faq_intro ); ?></p>
+<?php endif; ?>
 			</div>
 			<?php endif; ?>
 
@@ -139,7 +153,20 @@ get_header();
 	<?php endif; ?>
 
 	<section class="py-16 lg:py-24 bg-primary relative overflow-hidden" data-aos="fade-up">
+<?php if ( '' !== $nera_credit_watermark ) : ?>
+		<div class="absolute right-0 top-1/2 -translate-y-1/2 text-[200px] font-bold leading-none text-white/5 pointer-events-none select-none tracking-wide" aria-hidden="true"><?php echo esc_html( $nera_credit_watermark ); ?></div>
+<?php endif; ?>
 		<div class="max-w-7xl mx-auto px-4 lg:px-0 relative">
+<?php if ( $nera_credit_cta_lines || '' !== $nera_credit_subtitle ) : ?>
+			<div class="mb-10">
+<?php if ( $nera_credit_cta_lines ) : ?>
+				<h2 class="text-4xl lg:text-6xl font-bold text-white leading-tight mb-4"><?php echo implode( '<br>', array_map( 'esc_html', $nera_credit_cta_lines ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- each line escaped. ?></h2>
+<?php endif; ?>
+<?php if ( '' !== $nera_credit_subtitle ) : ?>
+				<p class="text-white/70 text-sm font-light max-w-md"><?php echo esc_html( $nera_credit_subtitle ); ?></p>
+<?php endif; ?>
+			</div>
+<?php endif; ?>
 			<div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3">
 				<?php
 				$nera_credit_first = true;
@@ -163,6 +190,21 @@ get_header();
 		</div>
 	</section>
 
+<?php if ( '' !== $nera_credit_text || '' !== $nera_credit_badge ) : ?>
+	<div class="border-t border-gray-200 bg-surface py-7">
+		<div class="max-w-7xl mx-auto px-4 lg:px-0 flex flex-wrap items-center justify-between gap-4">
+			<?php if ( '' !== $nera_credit_text ) : ?>
+			<p class="text-xs text-text-secondary font-light"><?php echo esc_html( $nera_credit_text ); ?></p>
+			<?php endif; ?>
+			<?php if ( '' !== $nera_credit_badge && '' !== $nera_credit_href ) : ?>
+			<a href="<?php echo esc_url( $nera_credit_href ); ?>" target="_blank" rel="noopener" class="<?php echo esc_attr( $nera_credit_badge_class ); ?> hover:border-primary hover:text-primary transition-colors"><?php echo esc_html( $nera_credit_badge ); ?></a>
+			<?php elseif ( '' !== $nera_credit_badge ) : ?>
+			<span class="<?php echo esc_attr( $nera_credit_badge_class ); ?>"><?php echo esc_html( $nera_credit_badge ); ?></span>
+			<?php endif; ?>
+		</div>
+	</div>
+
+<?php endif; ?>
 </main>
 
 <?php
