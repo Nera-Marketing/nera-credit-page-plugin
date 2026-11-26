@@ -40,6 +40,7 @@ final class Plugin {
 		// The theme's functions.php loads after plugins_loaded, so route checks wait for init.
 		add_action( 'init', array( __CLASS__, 'register_route' ), 11 );
 		add_filter( 'template_include', array( __CLASS__, 'template_include' ), 100 );
+		Seo::register();
 	}
 
 	/**
