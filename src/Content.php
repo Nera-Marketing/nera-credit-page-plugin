@@ -80,6 +80,20 @@ final class Content {
 	}
 
 	/**
+	 * A body field split into paragraphs at blank lines.
+	 *
+	 * @param string $key Field key.
+	 * @return array<int,string>
+	 */
+	public static function paragraphs( $key ) {
+		$text = self::get( $key );
+		if ( '' === $text ) {
+			return array();
+		}
+		return array_values( array_filter( array_map( 'trim', preg_split( '/\R\s*\R/', $text ) ), 'strlen' ) );
+	}
+
+	/**
 	 * Question and answer pairs, in order.
 	 *
 	 * @return array<int,array{question:string,answer:string}>

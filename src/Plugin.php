@@ -31,6 +31,9 @@ final class Plugin {
 	 * @return void
 	 */
 	public static function boot() {
+		if ( is_admin() ) {
+			Admin\Fields::register_hooks();
+		}
 		if ( ! self::is_enabled() ) {
 			return;
 		}

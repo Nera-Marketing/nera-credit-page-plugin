@@ -41,8 +41,8 @@ get_header();
 	<?php
 	foreach ( $nera_credit_sections as $nera_credit_section ) :
 		$nera_credit_heading = Content::get( $nera_credit_section[0] );
-		$nera_credit_body    = Content::get( $nera_credit_section[1] );
-		if ( '' === $nera_credit_body ) {
+		$nera_credit_body    = Content::paragraphs( $nera_credit_section[1] );
+		if ( ! $nera_credit_body ) {
 			continue;
 		}
 		?>
@@ -52,7 +52,9 @@ get_header();
 				<?php if ( '' !== $nera_credit_heading ) : ?>
 				<h2 class="text-3xl lg:text-4xl font-bold text-text-primary leading-tight mb-4"><?php echo esc_html( $nera_credit_heading ); ?></h2>
 				<?php endif; ?>
-				<p class="nera-attr-section-lead text-base font-medium text-text-primary leading-relaxed border-t-2 border-primary pt-4 mx-auto max-w-2xl"><?php echo esc_html( $nera_credit_body ); ?></p>
+				<?php foreach ( $nera_credit_body as $nera_credit_p => $nera_credit_paragraph ) : ?>
+				<p class="nera-attr-section-lead text-base font-medium text-text-primary leading-relaxed mx-auto max-w-2xl <?php echo 0 === $nera_credit_p ? 'border-t-2 border-primary pt-4' : 'mt-4'; ?>"><?php echo esc_html( $nera_credit_paragraph ); ?></p>
+				<?php endforeach; ?>
 			</div>
 		</div>
 	</section>
