@@ -14,10 +14,6 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Seo {
 
-	const TITLE = 'Website credits | {Client}';
-
-	const DESCRIPTION = "{Client}'s website was designed and built by Nera Marketing, an ecommerce agency that builds platforms for businesses that sell at volume.";
-
 	const CREATOR = array(
 		'@type' => 'Organization',
 		'@id'   => 'https://neramarketing.co.uk/#organization',
@@ -74,14 +70,14 @@ final class Seo {
 	 * @return string
 	 */
 	public static function title() {
-		return Content::fill( self::TITLE );
+		return Content::get( 'seo_title' );
 	}
 
 	/**
 	 * @return string
 	 */
 	public static function description() {
-		return Content::fill( self::DESCRIPTION );
+		return Content::get( 'seo_description' );
 	}
 
 	/**

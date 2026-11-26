@@ -19,34 +19,55 @@ final class Content {
 	const CLIENT_TOKEN = '{Client}';
 
 	/**
-	 * Default copy, keyed by field.
+	 * Fields that show their default when saved blank, so the page never loses them.
+	 */
+	const REQUIRED = array( 'hero_heading', 'seo_title', 'seo_description' );
+
+	/**
+	 * Default copy, keyed by field. 'faqs' is the list of question and answer rows; every other value is a string.
 	 *
-	 * @return array<string,string>
+	 * @return array<string,mixed>
 	 */
 	public static function defaults() {
 		return array(
 			'client_name'         => '',
-			'hero_heading'        => 'Website built by Nera Marketing',
+			'hero_badge'          => '',
+			'hero_heading'        => "Website built by\nNera Marketing",
 			'hero_intro'          => "{Client}'s website was designed and built by Nera Marketing.",
+			'address'             => '',
+			'about_eyebrow'       => '',
 			'about_heading'       => 'About Nera Marketing',
 			'about_body'          => 'At Nera Marketing we build and grow ecommerce platforms for businesses that sell at volume, where payments, regulation and complex integrations have to be right. We create online stores, fully custom platforms, competition websites and web apps. Every platform is built to hold up at peak, get found in Google and AI search, and turn visitors into sales. Once it is live, we keep it fast, secure and improving, so it sells more as your business scales. We have generated over £20M in revenue for more than 500 clients.',
+			'built_eyebrow'       => '',
 			'built_heading'       => 'What we built for {Client}',
 			'built_body'          => '{Client} sells entries online at volume. The platform has to take payments reliably, follow UK competition rules and stay fast when a draw closes. Every build includes custom ticketing, a free entry route, a skills question, countdown timers, draw randomisation and GDPR tools. {Client} owns the platform outright.',
+			'ecommerce_eyebrow'   => '',
 			'ecommerce_heading'   => 'Competition websites are ecommerce platforms',
 			'ecommerce_body'      => 'A competition website is an online store with extra rules. It takes card payments at volume, runs a free entry route and a skills question, and has to handle traffic spikes on draw nights. We build them to the same standard as every ecommerce platform we deliver.',
+			'faq_eyebrow'         => '',
 			'faq_heading'         => 'Questions',
-			'faq_1_question'      => 'Who built the {Client} website?',
-			'faq_1_answer'        => 'Nera Marketing designed and built it.',
-			'faq_2_question'      => 'Who owns the {Client} website?',
-			'faq_2_answer'        => '{Client} owns the platform outright.',
-			'faq_3_question'      => 'What does Nera Marketing build?',
-			'faq_3_answer'        => 'Online stores, fully custom platforms, competition websites and web apps, for businesses that sell at volume.',
+			'faqs'                => array(
+				array(
+					'question' => 'Who built the {Client} website?',
+					'answer'   => 'Nera Marketing designed and built it.',
+				),
+				array(
+					'question' => 'Who owns the {Client} website?',
+					'answer'   => '{Client} owns the platform outright.',
+				),
+				array(
+					'question' => 'What does Nera Marketing build?',
+					'answer'   => 'Online stores, fully custom platforms, competition websites and web apps, for businesses that sell at volume.',
+				),
+			),
 			'services_link_label' => 'See how we build competition websites',
 			'services_link_url'   => 'https://neramarketing.co.uk/competition-websites/',
 			'case_study_label'    => 'Read the {Client} case study',
 			'case_study_url'      => '',
 			'home_link_label'     => 'Visit Nera Marketing',
 			'home_link_url'       => 'https://neramarketing.co.uk/',
+			'seo_title'           => 'Website credits | {Client}',
+			'seo_description'     => "{Client}'s website was designed and built by Nera Marketing, an ecommerce agency that builds platforms for businesses that sell at volume.",
 		);
 	}
 
@@ -62,7 +83,7 @@ final class Content {
 			return (string) $saved;
 		}
 		$defaults = self::defaults();
-		return isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
+		return isset( $defaults[ $key ] ) && is_string( $defaults[ $key ] ) ? $defaults[ $key ] : '';
 	}
 
 	/**
@@ -73,8 +94,8 @@ final class Content {
 	 */
 	public static function get( $key ) {
 		$text = trim( self::raw( $key ) );
-		if ( '' === $text && 'hero_heading' === $key ) {
-			$text = self::defaults()['hero_heading'];
+		if ( '' === $text && in_array( $key, self::REQUIRED, true ) ) {
+			$text = self::defaults()[ $key ];
 		}
 		return '' === $text ? '' : self::fill( $text );
 	}
@@ -94,19 +115,52 @@ final class Content {
 	}
 
 	/**
-	 * Question and answer pairs, in order.
+	 * A heading with one line per row: rows are joined with <br> and the last one is in the brand colour.
+	 *
+	 * @param string $key Field key.
+	 * @return string Escaped HTML.
+	 */
+	public static function heading_html( $key ) {
+		$lines = array_values( array_filter( array_map( 'trim', preg_split( '/\R/', self::get( $key ) ) ), 'strlen' ) );
+		if ( ! $lines ) {
+			return '';
+		}
+		$last = array_pop( $lines );
+		$html = '';
+		foreach ( $lines as $line ) {
+			$html .= esc_html( $line ) . '<br>';
+		}
+		return $html . '<span class="text-primary">' . esc_html( $last ) . '</span>';
+	}
+
+	/**
+	 * Question and answer rows, in order. Never saved shows the default rows; a row missing
+	 * its question or answer is skipped.
 	 *
 	 * @return array<int,array{question:string,answer:string}>
 	 */
 	public static function faqs() {
+		$count = get_option( self::OPTION_PREFIX . 'faqs', null );
+		if ( null === $count ) {
+			$rows = self::defaults()['faqs'];
+		} else {
+			$rows = array();
+			for ( $i = 0; $i < (int) $count; $i++ ) {
+				$rows[] = array(
+					'question' => (string) get_option( self::OPTION_PREFIX . 'faqs_' . $i . '_question', '' ),
+					'answer'   => (string) get_option( self::OPTION_PREFIX . 'faqs_' . $i . '_answer', '' ),
+				);
+			}
+		}
+
 		$out = array();
-		for ( $i = 1; $i <= 3; $i++ ) {
-			$question = self::get( 'faq_' . $i . '_question' );
-			$answer   = self::get( 'faq_' . $i . '_answer' );
+		foreach ( $rows as $row ) {
+			$question = trim( $row['question'] );
+			$answer   = trim( $row['answer'] );
 			if ( '' !== $question && '' !== $answer ) {
 				$out[] = array(
-					'question' => $question,
-					'answer'   => $answer,
+					'question' => self::fill( $question ),
+					'answer'   => self::fill( $answer ),
 				);
 			}
 		}

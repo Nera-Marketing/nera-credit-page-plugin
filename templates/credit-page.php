@@ -13,9 +13,9 @@ use Nera\CreditPage\Content;
 defined( 'ABSPATH' ) || exit;
 
 $nera_credit_sections = array(
-	array( 'about_heading', 'about_body', 'bg-surface' ),
-	array( 'built_heading', 'built_body', 'bg-secondary' ),
-	array( 'ecommerce_heading', 'ecommerce_body', 'bg-surface' ),
+	array( 'about_eyebrow', 'about_heading', 'about_body', 'bg-surface' ),
+	array( 'built_eyebrow', 'built_heading', 'built_body', 'bg-secondary' ),
+	array( 'ecommerce_eyebrow', 'ecommerce_heading', 'ecommerce_body', 'bg-surface' ),
 );
 
 $nera_credit_links = array(
@@ -31,29 +31,52 @@ get_header();
 
 	<section class="py-20 lg:py-28 border-b border-gray-200 overflow-hidden relative" data-aos="fade-up" data-aos-duration="600">
 		<div class="max-w-7xl mx-auto px-4 lg:px-0">
-			<h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-text-primary mb-8"><?php echo esc_html( Content::get( 'hero_heading' ) ); ?></h1>
+			<?php if ( '' !== Content::get( 'hero_badge' ) ) : ?>
+			<div class="nera-attr-badge inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-sm mb-8"><?php echo esc_html( Content::get( 'hero_badge' ) ); ?></div>
+			<?php endif; ?>
+			<h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-text-primary mb-8"><?php echo Content::heading_html( 'hero_heading' ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped line by line in heading_html(). ?></h1>
 			<?php if ( '' !== Content::get( 'hero_intro' ) ) : ?>
-			<p class="text-lg text-text-primary leading-relaxed max-w-2xl font-light"><?php echo esc_html( Content::get( 'hero_intro' ) ); ?></p>
+			<p class="text-lg text-text-secondary leading-relaxed max-w-2xl mb-10 font-light"><strong class="text-text-primary font-semibold"><?php echo esc_html( Content::get( 'hero_intro' ) ); ?></strong></p>
+			<?php endif; ?>
+			<?php if ( '' !== Content::get( 'address' ) ) : ?>
+			<div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+				<span class="text-sm font-semibold text-text-primary tracking-wide">Nera Marketing</span>
+				<span class="hidden sm:block w-px h-4 bg-gray-300"></span>
+				<span class="text-sm text-text-secondary tracking-wide"><?php echo esc_html( Content::get( 'address' ) ); ?></span>
+			</div>
 			<?php endif; ?>
 		</div>
 	</section>
 
 	<?php
 	foreach ( $nera_credit_sections as $nera_credit_section ) :
-		$nera_credit_heading = Content::get( $nera_credit_section[0] );
-		$nera_credit_body    = Content::paragraphs( $nera_credit_section[1] );
+		$nera_credit_eyebrow = Content::get( $nera_credit_section[0] );
+		$nera_credit_heading = Content::get( $nera_credit_section[1] );
+		$nera_credit_body    = Content::paragraphs( $nera_credit_section[2] );
+		$nera_credit_last    = count( $nera_credit_body ) - 1;
 		if ( ! $nera_credit_body ) {
 			continue;
 		}
 		?>
-	<section class="py-16 lg:py-24 border-b border-gray-200 <?php echo esc_attr( $nera_credit_section[2] ); ?>">
+	<section class="py-16 lg:py-24 border-b border-gray-200 <?php echo esc_attr( $nera_credit_section[3] ); ?>">
 		<div class="max-w-7xl mx-auto px-4 lg:px-0">
 			<div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
+				<?php if ( '' !== $nera_credit_eyebrow ) : ?>
+				<span class="text-xs font-semibold tracking-widest uppercase text-primary mb-4 block"><?php echo esc_html( $nera_credit_eyebrow ); ?></span>
+				<?php endif; ?>
 				<?php if ( '' !== $nera_credit_heading ) : ?>
 				<h2 class="text-3xl lg:text-4xl font-bold text-text-primary leading-tight mb-4"><?php echo esc_html( $nera_credit_heading ); ?></h2>
 				<?php endif; ?>
 				<?php foreach ( $nera_credit_body as $nera_credit_p => $nera_credit_paragraph ) : ?>
-				<p class="nera-attr-section-lead text-base font-medium text-text-primary leading-relaxed mx-auto max-w-2xl <?php echo 0 === $nera_credit_p ? 'border-t-2 border-primary pt-4' : 'mt-4'; ?>"><?php echo esc_html( $nera_credit_paragraph ); ?></p>
+				<?php
+				$nera_credit_class = 0 === $nera_credit_p
+					? 'nera-attr-section-lead text-base font-medium text-text-primary leading-relaxed border-t-2 border-primary pt-4 mx-auto max-w-2xl'
+					: 'text-text-secondary leading-relaxed text-sm font-light max-w-2xl mx-auto';
+				if ( $nera_credit_p < $nera_credit_last ) {
+					$nera_credit_class .= ' mb-4';
+				}
+				?>
+				<p class="<?php echo esc_attr( $nera_credit_class ); ?>"><?php echo esc_html( $nera_credit_paragraph ); ?></p>
 				<?php endforeach; ?>
 			</div>
 		</div>
@@ -67,9 +90,14 @@ get_header();
 	<section class="py-16 lg:py-24 border-b border-gray-200 bg-secondary">
 		<div class="max-w-7xl mx-auto px-4 lg:px-0">
 
-			<?php if ( '' !== Content::get( 'faq_heading' ) ) : ?>
+			<?php if ( '' !== Content::get( 'faq_eyebrow' ) || '' !== Content::get( 'faq_heading' ) ) : ?>
 			<div class="mb-12" data-aos="fade-up">
+				<?php if ( '' !== Content::get( 'faq_eyebrow' ) ) : ?>
+				<span class="text-xs font-semibold tracking-widest uppercase text-primary mb-3 block"><?php echo esc_html( Content::get( 'faq_eyebrow' ) ); ?></span>
+				<?php endif; ?>
+				<?php if ( '' !== Content::get( 'faq_heading' ) ) : ?>
 				<h2 class="text-3xl lg:text-4xl font-bold text-text-primary leading-tight"><?php echo esc_html( Content::get( 'faq_heading' ) ); ?></h2>
+				<?php endif; ?>
 			</div>
 			<?php endif; ?>
 
