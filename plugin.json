@@ -9,7 +9,7 @@
 	"requires": "6.0",
 	"tested": "6.8",
 	"requires_php": "7.4",
-	"last_updated": "2026-11-26 00:00:00",
+	"last_updated": "2026-11-26 14:53:45",
 	"upgrade_notice": "Update to the latest release for bug fixes.",
 	"sections": {
 		"description": "<p>Serves the Nera Marketing credit page at the theme's attribution URL while switched on.</p>",
