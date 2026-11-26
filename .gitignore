@@ -1,0 +1,13 @@
+# Secrets
+*.key
+.env
+.env.*
+
+# Dependencies / build
+/vendor/
+/node_modules/
+*.zip
+
+# OS / editor
+.DS_Store
+*.log
