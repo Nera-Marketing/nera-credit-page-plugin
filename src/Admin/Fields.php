@@ -8,6 +8,8 @@
 namespace Nera\CreditPage\Admin;
 
 use Nera\CreditPage\Content;
+use Nera\CreditPage\Plugin;
+use Nera\CreditPage\PrivacyCredit;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -36,6 +38,7 @@ final class Fields {
 		add_filter( 'acf/validate_value/key=field_ncp_case_study_url', array( __CLASS__, 'validate_case_study_url' ), 10, 2 );
 		add_filter( 'acf/validate_value/key=field_ncp_credit_url', array( __CLASS__, 'validate_credit_url' ), 10, 2 );
 		add_filter( 'acf/load_value/key=field_ncp_faqs', array( __CLASS__, 'default_faqs' ), 20, 2 );
+		add_filter( 'acf/prepare_field/key=field_ncp_privacy_status', array( __CLASS__, 'privacy_status' ) );
 		add_action( 'acf/save_post', array( __CLASS__, 'before_save' ), 1 );
 		add_action( 'acf/save_post', array( __CLASS__, 'after_save' ), 20 );
 		add_filter( 'plugin_action_links_' . plugin_basename( NERA_CREDIT_PAGE_FILE ), array( __CLASS__, 'action_links' ) );
@@ -138,6 +141,14 @@ final class Fields {
 				'instructions'  => __( 'On: the privacy policy page ends with a short section linking to the credit page, unless its content already links there. Works only while "Enable credit page" is on.', 'nera-credit-page' ),
 				'default_value' => 0,
 				'ui'            => 1,
+			),
+			array(
+				'key'       => 'field_ncp_privacy_status',
+				'label'     => '',
+				'name'      => '',
+				'type'      => 'message',
+				'message'   => '',
+				'new_lines' => '',
 			),
 			array(
 				'key'          => 'field_ncp_client_name',
@@ -293,6 +304,55 @@ final class Fields {
 			);
 		}
 		return $rows;
+	}
+
+	/**
+	 * Fills the note under the privacy toggle from the saved settings, using the same checks as the page.
+	 *
+	 * @param array<string,mixed>|false $field Field being rendered.
+	 * @return array<string,mixed>|false
+	 */
+	public static function privacy_status( $field ) {
+		if ( ! is_array( $field ) ) {
+			return $field;
+		}
+
+		$id = PrivacyCredit::privacy_page_id();
+		if ( 0 === $id ) {
+			$field['message'] = sprintf(
+				/* translators: %s: link to Settings > Privacy. */
+				esc_html__( 'No privacy policy page is set (%s), so nothing is added.', 'nera-credit-page' ),
+				'<a href="' . esc_url( admin_url( 'options-privacy.php' ) ) . '">' . esc_html__( 'Settings → Privacy', 'nera-credit-page' ) . '</a>'
+			);
+			return $field;
+		}
+
+		$title = get_the_title( $id );
+		$title = '' === $title ? '#' . $id : $title;
+		$page  = '<a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( $title ) . '</a>';
+
+		if ( PrivacyCredit::is_present( PrivacyCredit::privacy_html( $id ) ) ) {
+			$edit             = get_edit_post_link( $id, 'raw' );
+			$field['message'] = esc_html__( 'Already on the privacy page: auto-add is skipped.', 'nera-credit-page' )
+				. ( $edit ? ' <a href="' . esc_url( $edit ) . '">' . sprintf(
+					/* translators: %s: privacy page title. */
+					esc_html__( 'Edit %s', 'nera-credit-page' ),
+					esc_html( $title )
+				) . '</a>' : '' );
+			return $field;
+		}
+
+		if ( ! Plugin::is_enabled() ) {
+			/* translators: %s: linked privacy page title. */
+			$field['message'] = sprintf( esc_html__( 'Turn on Enable credit page first. The section then goes at the bottom of %s.', 'nera-credit-page' ), $page );
+		} elseif ( ! PrivacyCredit::is_switched_on() ) {
+			/* translators: %s: linked privacy page title. */
+			$field['message'] = sprintf( esc_html__( 'Off: nothing is added. Turn this on to add it at the bottom of %s.', 'nera-credit-page' ), $page );
+		} else {
+			/* translators: %s: linked privacy page title. */
+			$field['message'] = sprintf( esc_html__( 'Will be added at the bottom of the privacy page: %s.', 'nera-credit-page' ), $page );
+		}
+		return $field;
 	}
 
 	/**
