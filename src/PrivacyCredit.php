@@ -69,6 +69,11 @@ final class PrivacyCredit {
 			return $content;
 		}
 
+		// A locked page's content is the password form.
+		if ( post_password_required( $id ) ) {
+			return $content;
+		}
+
 		if ( self::is_present( $content ) ) {
 			return $content;
 		}
