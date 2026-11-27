@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Nera Credit Page
  * Description:       Serves the Nera Marketing credit page at the theme's attribution URL while switched on.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires PHP:      7.4
  * Author:            Nera Marketing
  * Author URI:        https://neramarketing.co.uk/
@@ -18,7 +18,7 @@ use YahnisElsts\PluginUpdateChecker\v5p5\Vcs\GitHubApi;
 define( 'NERA_CREDIT_PAGE_FILE', __FILE__ );
 define( 'NERA_CREDIT_PAGE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NERA_CREDIT_PAGE_URL', plugin_dir_url( __FILE__ ) );
-define( 'NERA_CREDIT_PAGE_VERSION', '1.0.0' );
+define( 'NERA_CREDIT_PAGE_VERSION', '1.1.0' );
 
 spl_autoload_register(
 	static function ( $class ) {
