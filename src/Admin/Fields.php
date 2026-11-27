@@ -37,12 +37,15 @@ final class Fields {
 		add_action( 'admin_menu', array( __CLASS__, 'hide_menu' ), 999 );
 		add_filter( 'acf/validate_value/key=field_ncp_case_study_url', array( __CLASS__, 'validate_case_study_url' ), 10, 2 );
 		add_filter( 'acf/validate_value/key=field_ncp_credit_url', array( __CLASS__, 'validate_credit_url' ), 10, 2 );
+		add_filter( 'acf/validate_value/key=field_ncp_color_primary', array( __CLASS__, 'validate_color' ), 10, 2 );
+		add_filter( 'acf/validate_value/key=field_ncp_color_cta_text', array( __CLASS__, 'validate_color' ), 10, 2 );
 		add_filter( 'acf/load_value/key=field_ncp_faqs', array( __CLASS__, 'default_faqs' ), 20, 2 );
 		add_filter( 'acf/prepare_field/key=field_ncp_privacy_status', array( __CLASS__, 'privacy_status' ) );
 		add_action( 'acf/save_post', array( __CLASS__, 'before_save' ), 1 );
 		add_action( 'acf/save_post', array( __CLASS__, 'after_save' ), 20 );
 		add_filter( 'plugin_action_links_' . plugin_basename( NERA_CREDIT_PAGE_FILE ), array( __CLASS__, 'action_links' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'missing_acf_notice' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_styles' ) );
 	}
 
 	/**
@@ -132,6 +135,19 @@ final class Fields {
 				'instructions'  => __( 'On: this plugin serves the credit page. Off: the theme\'s page shows as before.', 'nera-credit-page' ),
 				'default_value' => 0,
 				'ui'            => 1,
+			),
+			array(
+				'key'           => 'field_ncp_layout',
+				'label'         => __( 'Layout', 'nera-credit-page' ),
+				'name'          => 'ncp_layout',
+				'type'          => 'radio',
+				'instructions'  => __( 'How the credit page is arranged. The text in the other tabs is the same for every layout.', 'nera-credit-page' ),
+				'choices'       => self::layout_choices(),
+				'default_value' => Content::DEFAULT_LAYOUT,
+				'layout'        => 'horizontal',
+				'return_format' => 'value',
+				'allow_null'    => 0,
+				'other_choice'  => 0,
 			),
 			array(
 				'key'           => 'field_ncp_privacy_credit',
@@ -238,11 +254,41 @@ final class Fields {
 			'instructions' => __( 'A full https:// address makes the badge a link. Leave blank to hide the link.', 'nera-credit-page' ),
 		);
 
+		$fields[] = self::tab( 'colours', __( 'Colours', 'nera-credit-page' ) );
+		$fields[] = self::color( 'primary', __( 'Brand colour', 'nera-credit-page' ), __( 'Accent text, buttons, the CTA band and the last line of the main heading. Pick a colour dark enough to read on the page background. Leave blank to use the theme\'s colour.', 'nera-credit-page' ) );
+		$fields[] = self::color( 'cta_text', __( 'CTA text colour', 'nera-credit-page' ), __( 'Text on brand-coloured bands: the CTA heading, subtitle and buttons. Pick a colour that reads on the brand colour. Leave blank to use the theme\'s colour.', 'nera-credit-page' ) );
+
 		$fields[] = self::tab( 'seo', __( 'SEO', 'nera-credit-page' ) );
 		$fields[] = self::copy( 'seo_title', __( 'Page Title', 'nera-credit-page' ), 'text', __( 'Browser tab title and WebPage schema name.', 'nera-credit-page' ) );
 		$fields[] = array_merge( self::copy( 'seo_description', __( 'Meta description', 'nera-credit-page' ), 'textarea', '' ), array( 'rows' => 3 ) );
 
 		return $fields;
+	}
+
+	/**
+	 * Layout field choices: each layout's thumbnail and name.
+	 *
+	 * @return array<string,string>
+	 */
+	private static function layout_choices() {
+		$choices = array();
+		foreach ( Content::LAYOUTS as $slug => $layout ) {
+			$choices[ $slug ] = '<img src="' . esc_url( NERA_CREDIT_PAGE_URL . 'assets/layout-thumbs/' . $layout['thumb'] ) . '" alt="" width="160" height="100"> <span>' . esc_html( $layout['label'] ) . '</span>';
+		}
+		return $choices;
+	}
+
+	/**
+	 * Card styles for the layout field, on the editor screen only.
+	 *
+	 * @param string $hook_suffix Current admin screen.
+	 * @return void
+	 */
+	public static function enqueue_admin_styles( $hook_suffix ) {
+		if ( false === strpos( (string) $hook_suffix, self::SLUG ) ) {
+			return;
+		}
+		wp_enqueue_style( 'nera-credit-page-layout-picker', NERA_CREDIT_PAGE_URL . 'assets/admin-layout-picker.css', array(), NERA_CREDIT_PAGE_VERSION );
 	}
 
 	/**
@@ -256,6 +302,27 @@ final class Fields {
 			'label'     => $label,
 			'type'      => 'tab',
 			'placement' => 'top',
+		);
+	}
+
+	/**
+	 * A colour picker with no default, so a blank field keeps the theme's colour.
+	 *
+	 * @param string $key          Colour key.
+	 * @param string $label        Field label.
+	 * @param string $instructions Help text.
+	 * @return array<string,mixed>
+	 */
+	private static function color( $key, $label, $instructions ) {
+		return array(
+			'key'            => 'field_ncp_color_' . $key,
+			'label'          => $label,
+			'name'           => 'ncp_color_' . $key,
+			'type'           => 'color_picker',
+			'instructions'   => $instructions,
+			'default_value'  => '',
+			'enable_opacity' => 0,
+			'return_format'  => 'string',
 		);
 	}
 
@@ -386,6 +453,18 @@ final class Fields {
 			return $valid;
 		}
 		return __( 'The URL must be a full https:// address.', 'nera-credit-page' );
+	}
+
+	/**
+	 * @param mixed $valid Current result.
+	 * @param mixed $value Submitted value.
+	 * @return mixed
+	 */
+	public static function validate_color( $valid, $value ) {
+		if ( true !== $valid || ! is_string( $value ) || '' === trim( $value ) || sanitize_hex_color( trim( $value ) ) ) {
+			return $valid;
+		}
+		return __( 'Pick a colour, or enter a hex value such as #1e3a8a.', 'nera-credit-page' );
 	}
 
 	/**

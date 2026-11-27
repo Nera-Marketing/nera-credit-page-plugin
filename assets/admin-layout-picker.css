@@ -1,0 +1,70 @@
+/* Credit Page Editor: the Layout radio list as a grid of thumbnail cards. */
+
+.acf-field[data-name="ncp_layout"] .acf-radio-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin: 0;
+}
+
+.acf-field[data-name="ncp_layout"] .acf-radio-list > li {
+	float: none;
+	margin: 0;
+}
+
+.acf-field[data-name="ncp_layout"] .acf-radio-list label {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	width: 184px;
+	padding: 10px 10px 8px;
+	border: 2px solid #dcdcde;
+	border-radius: 4px;
+	background: #fff;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+.acf-field[data-name="ncp_layout"] .acf-radio-list label:hover {
+	border-color: #8c8f94;
+}
+
+/* Hidden but still focusable, so the keyboard moves between cards with the arrow keys. */
+.acf-field[data-name="ncp_layout"] .acf-radio-list input[type="radio"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	opacity: 0;
+}
+
+.acf-field[data-name="ncp_layout"] .acf-radio-list img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.acf-field[data-name="ncp_layout"] .acf-radio-list label.selected,
+.acf-field[data-name="ncp_layout"] .acf-radio-list label:has(input:checked) {
+	border-color: var(--wp-admin-theme-color, #2271b1);
+	box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #2271b1);
+}
+
+.acf-field[data-name="ncp_layout"] .acf-radio-list label:has(input:focus-visible) {
+	outline: 2px solid var(--wp-admin-theme-color, #2271b1);
+	outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+	.acf-field[data-name="ncp_layout"] .acf-radio-list > li {
+		flex: 1 1 100%;
+	}
+
+	.acf-field[data-name="ncp_layout"] .acf-radio-list label {
+		width: 100%;
+		max-width: 240px;
+	}
+}

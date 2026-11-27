@@ -24,6 +24,37 @@ final class Content {
 	const REQUIRED = array( 'hero_heading', 'seo_title', 'seo_description' );
 
 	/**
+	 * Registered layouts in picker order: slug => name and thumbnail file in assets/layout-thumbs/.
+	 * Each slug has its markup in templates/layouts/<slug>.php.
+	 */
+	const LAYOUTS = array(
+		'guide'     => array(
+			'label' => 'Guide',
+			'thumb' => 'guide.svg',
+		),
+		'imprint'   => array(
+			'label' => 'Imprint',
+			'thumb' => 'imprint.svg',
+		),
+		'statement' => array(
+			'label' => 'Statement',
+			'thumb' => 'statement.svg',
+		),
+	);
+
+	const DEFAULT_LAYOUT = 'guide';
+
+	/**
+	 * The saved layout when it is a registered one, else the default.
+	 *
+	 * @return string
+	 */
+	public static function layout() {
+		$saved = get_option( self::OPTION_PREFIX . 'layout', '' );
+		return is_string( $saved ) && isset( self::LAYOUTS[ $saved ] ) ? $saved : self::DEFAULT_LAYOUT;
+	}
+
+	/**
 	 * Default copy, keyed by field. 'faqs' is the list of question and answer rows; every other value is a string.
 	 *
 	 * @return array<string,mixed>
@@ -171,6 +202,18 @@ final class Content {
 		}
 		$parts = wp_parse_url( trim( $url ) );
 		return is_array( $parts ) && ! empty( $parts['scheme'] ) && 'https' === strtolower( $parts['scheme'] ) && ! empty( $parts['host'] );
+	}
+
+	/**
+	 * A colour field's saved value when it is a hex colour, else empty.
+	 *
+	 * @param string $key Colour key: primary or cta_text.
+	 * @return string
+	 */
+	public static function color( $key ) {
+		$saved = get_option( self::OPTION_PREFIX . 'color_' . $key, '' );
+		$hex   = is_string( $saved ) ? sanitize_hex_color( trim( $saved ) ) : '';
+		return is_string( $hex ) ? $hex : '';
 	}
 
 	/**
