@@ -131,6 +131,15 @@ final class Fields {
 				'ui'            => 1,
 			),
 			array(
+				'key'           => 'field_ncp_privacy_credit',
+				'label'         => __( 'Add credit section to privacy policy', 'nera-credit-page' ),
+				'name'          => 'ncp_privacy_credit',
+				'type'          => 'true_false',
+				'instructions'  => __( 'On: the privacy policy page ends with a short section linking to the credit page, unless its content already links there. Works only while "Enable credit page" is on.', 'nera-credit-page' ),
+				'default_value' => 0,
+				'ui'            => 1,
+			),
+			array(
 				'key'          => 'field_ncp_client_name',
 				'label'        => __( 'Client name', 'nera-credit-page' ),
 				'name'         => 'ncp_client_name',

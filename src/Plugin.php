@@ -41,6 +41,7 @@ final class Plugin {
 		add_action( 'init', array( __CLASS__, 'register_route' ), 11 );
 		add_filter( 'template_include', array( __CLASS__, 'template_include' ), 100 );
 		Seo::register();
+		PrivacyCredit::register();
 	}
 
 	/**
