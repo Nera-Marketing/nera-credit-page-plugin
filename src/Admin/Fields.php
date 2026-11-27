@@ -43,6 +43,7 @@ final class Fields {
 		add_action( 'acf/save_post', array( __CLASS__, 'after_save' ), 20 );
 		add_filter( 'plugin_action_links_' . plugin_basename( NERA_CREDIT_PAGE_FILE ), array( __CLASS__, 'action_links' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'missing_acf_notice' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_styles' ) );
 	}
 
 	/**
@@ -132,6 +133,19 @@ final class Fields {
 				'instructions'  => __( 'On: this plugin serves the credit page. Off: the theme\'s page shows as before.', 'nera-credit-page' ),
 				'default_value' => 0,
 				'ui'            => 1,
+			),
+			array(
+				'key'           => 'field_ncp_layout',
+				'label'         => __( 'Layout', 'nera-credit-page' ),
+				'name'          => 'ncp_layout',
+				'type'          => 'radio',
+				'instructions'  => __( 'How the credit page is arranged. The text in the other tabs is the same for every layout.', 'nera-credit-page' ),
+				'choices'       => self::layout_choices(),
+				'default_value' => Content::DEFAULT_LAYOUT,
+				'layout'        => 'horizontal',
+				'return_format' => 'value',
+				'allow_null'    => 0,
+				'other_choice'  => 0,
 			),
 			array(
 				'key'           => 'field_ncp_privacy_credit',
@@ -243,6 +257,32 @@ final class Fields {
 		$fields[] = array_merge( self::copy( 'seo_description', __( 'Meta description', 'nera-credit-page' ), 'textarea', '' ), array( 'rows' => 3 ) );
 
 		return $fields;
+	}
+
+	/**
+	 * Layout field choices: each layout's thumbnail and name.
+	 *
+	 * @return array<string,string>
+	 */
+	private static function layout_choices() {
+		$choices = array();
+		foreach ( Content::LAYOUTS as $slug => $layout ) {
+			$choices[ $slug ] = '<img src="' . esc_url( NERA_CREDIT_PAGE_URL . 'assets/layout-thumbs/' . $layout['thumb'] ) . '" alt="" width="160" height="100"> <span>' . esc_html( $layout['label'] ) . '</span>';
+		}
+		return $choices;
+	}
+
+	/**
+	 * Card styles for the layout field, on the editor screen only.
+	 *
+	 * @param string $hook_suffix Current admin screen.
+	 * @return void
+	 */
+	public static function enqueue_admin_styles( $hook_suffix ) {
+		if ( false === strpos( (string) $hook_suffix, self::SLUG ) ) {
+			return;
+		}
+		wp_enqueue_style( 'nera-credit-page-layout-picker', NERA_CREDIT_PAGE_URL . 'assets/admin-layout-picker.css', array(), NERA_CREDIT_PAGE_VERSION );
 	}
 
 	/**

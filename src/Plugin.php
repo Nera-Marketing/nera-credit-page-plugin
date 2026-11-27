@@ -40,6 +40,7 @@ final class Plugin {
 		// The theme's functions.php loads after plugins_loaded, so route checks wait for init.
 		add_action( 'init', array( __CLASS__, 'register_route' ), 11 );
 		add_filter( 'template_include', array( __CLASS__, 'template_include' ), 100 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_styles' ) );
 		Seo::register();
 		PrivacyCredit::register();
 	}
@@ -106,6 +107,18 @@ final class Plugin {
 		status_header( 200 );
 
 		return $path;
+	}
+
+	/**
+	 * Layout stylesheet, loaded on the credit page only.
+	 *
+	 * @return void
+	 */
+	public static function enqueue_styles() {
+		if ( 1 !== (int) get_query_var( self::QUERY_VAR ) ) {
+			return;
+		}
+		wp_enqueue_style( 'nera-credit-page', NERA_CREDIT_PAGE_URL . 'assets/credit-page.css', array(), NERA_CREDIT_PAGE_VERSION );
 	}
 
 	/**

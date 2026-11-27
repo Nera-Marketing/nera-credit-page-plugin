@@ -24,6 +24,29 @@ final class Content {
 	const REQUIRED = array( 'hero_heading', 'seo_title', 'seo_description' );
 
 	/**
+	 * Registered layouts in picker order: slug => name and thumbnail file in assets/layout-thumbs/.
+	 * Each slug has its markup in templates/layouts/<slug>.php.
+	 */
+	const LAYOUTS = array(
+		'guide' => array(
+			'label' => 'Guide',
+			'thumb' => 'guide.svg',
+		),
+	);
+
+	const DEFAULT_LAYOUT = 'guide';
+
+	/**
+	 * The saved layout when it is a registered one, else the default.
+	 *
+	 * @return string
+	 */
+	public static function layout() {
+		$saved = get_option( self::OPTION_PREFIX . 'layout', '' );
+		return is_string( $saved ) && isset( self::LAYOUTS[ $saved ] ) ? $saved : self::DEFAULT_LAYOUT;
+	}
+
+	/**
 	 * Default copy, keyed by field. 'faqs' is the list of question and answer rows; every other value is a string.
 	 *
 	 * @return array<string,mixed>
