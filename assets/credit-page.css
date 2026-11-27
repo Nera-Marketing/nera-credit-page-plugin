@@ -53,24 +53,25 @@
 }
 
 /* CTA text colour: only when the editor sets one (class on main), so the default keeps the
-   theme's white text. Unlayered, so these beat the bundle's utility classes. */
-.nera-credit-page.ncp-has-cta-text .ncp-cta__title,
-.nera-credit-page.ncp-has-cta-text .ncp-cta__subtitle {
+   theme's white text. Unlayered, so these beat the bundle's utility classes. Statement's CTA
+   band is dark, not the brand colour, so there the colour goes to the hero instead. */
+.nera-credit-page.ncp-has-cta-text:not(.ncp-layout-statement) .ncp-cta__title,
+.nera-credit-page.ncp-has-cta-text:not(.ncp-layout-statement) .ncp-cta__subtitle {
 	color: var(--ncp-cta-text);
 }
 
 /* The theme forces a.text-white with !important. */
-.nera-credit-page.ncp-has-cta-text .ncp-btn--ghost {
+.nera-credit-page.ncp-has-cta-text:not(.ncp-layout-statement) .ncp-btn--ghost {
 	color: var(--ncp-cta-text) !important;
 	border-color: color-mix(in srgb, var(--ncp-cta-text) 40%, transparent);
 }
 
-.nera-credit-page.ncp-has-cta-text .ncp-btn--ghost:hover {
+.nera-credit-page.ncp-has-cta-text:not(.ncp-layout-statement) .ncp-btn--ghost:hover {
 	border-color: var(--ncp-cta-text);
 }
 
-.nera-credit-page.ncp-has-cta-text .ncp-btn--primary,
-.nera-credit-page.ncp-has-cta-text .ncp-btn--primary:hover {
+.nera-credit-page.ncp-has-cta-text:not(.ncp-layout-statement) .ncp-btn--primary,
+.nera-credit-page.ncp-has-cta-text:not(.ncp-layout-statement) .ncp-btn--primary:hover {
 	background-color: var(--ncp-cta-text);
 	color: var(--color-primary);
 	border-color: var(--ncp-cta-text);
@@ -344,5 +345,148 @@
 	.ncp-layout-imprint .ncp-cta__actions {
 		flex-direction: column;
 		width: 100%;
+	}
+}
+
+/* Statement: full-bleed brand hero, ruled rows, tinted Questions band, dark CTA band.
+   The hero text sits on the brand colour, so it takes the CTA text colour (white by default). */
+.ncp-layout-statement .ncp-hero {
+	padding-block: clamp(4rem, 10vw, 8rem) clamp(3rem, 7vw, 6rem);
+}
+
+.ncp-layout-statement .ncp-hero,
+.ncp-layout-statement .ncp-hero * {
+	color: var(--ncp-cta-text, #fff);
+}
+
+.ncp-layout-statement .ncp-hero__badge {
+	margin-bottom: 1.5rem;
+	border: 1px solid color-mix(in srgb, var(--ncp-cta-text, #fff) 40%, transparent);
+}
+
+.ncp-layout-statement .ncp-hero__badge::before {
+	background-color: currentColor;
+}
+
+.ncp-layout-statement .ncp-hero__title {
+	margin: 0 0 2rem;
+	font-size: clamp(2.4rem, 10vw, 8.5rem);
+	line-height: 0.95;
+	letter-spacing: -0.035em;
+}
+
+/* The last heading line is an outline: transparent fill, stroke in the hero text colour. */
+.ncp-layout-statement .ncp-hero__title .text-primary {
+	display: block;
+	color: transparent;
+	-webkit-text-stroke: 1.5px var(--ncp-cta-text, #fff);
+}
+
+.ncp-layout-statement .ncp-hero__intro {
+	max-width: 36rem;
+	margin: 0;
+	font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+}
+
+.ncp-layout-statement .ncp-hero__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem 1.5rem;
+	margin-top: 1.5rem;
+}
+
+.ncp-layout-statement .ncp-hero__rule {
+	width: 1px;
+	height: 1rem;
+	background-color: currentColor;
+	opacity: 0.4;
+}
+
+@media (max-width: 639px) {
+	.ncp-layout-statement .ncp-hero__rule {
+		display: none;
+	}
+}
+
+.ncp-layout-statement .ncp-row {
+	display: grid;
+	grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+	gap: clamp(1rem, 4vw, 3rem);
+	align-items: start;
+	padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.ncp-layout-statement .ncp-row:last-child {
+	border-bottom-width: 0;
+}
+
+.ncp-layout-statement .ncp-section__title {
+	margin: 0;
+	font-size: clamp(1.6rem, 3vw, 2.4rem);
+	line-height: 1.12;
+}
+
+.ncp-layout-statement .ncp-row__body p {
+	margin: 0;
+	font-size: 1.02rem;
+	line-height: 1.6;
+}
+
+.ncp-layout-statement .ncp-row__body p + p {
+	margin-top: 1rem;
+}
+
+.ncp-layout-statement .ncp-faq {
+	padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.ncp-layout-statement .ncp-faq__inner {
+	max-width: 52rem;
+}
+
+.ncp-layout-statement .ncp-faq .ncp-section__title {
+	margin-bottom: 1.5rem;
+}
+
+.ncp-layout-statement .ncp-faq__intro {
+	margin: -0.75rem 0 1.25rem;
+}
+
+.ncp-layout-statement .ncp-cta {
+	padding-block: clamp(3rem, 7vw, 5.5rem);
+	text-align: center;
+}
+
+.ncp-layout-statement .ncp-cta__title {
+	margin: 0;
+	font-size: clamp(2rem, 5vw, 3.75rem);
+}
+
+.ncp-layout-statement .ncp-cta__text p {
+	margin: 0.75rem 0 0;
+}
+
+.ncp-layout-statement .ncp-cta__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.75rem;
+}
+
+.ncp-layout-statement .ncp-cta__text + .ncp-cta__actions {
+	margin-top: 2rem;
+}
+
+@media (max-width: 799px) {
+	.ncp-layout-statement .ncp-row {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.75rem;
+	}
+}
+
+@media (max-width: 639px) {
+	.ncp-layout-statement .ncp-cta__actions {
+		flex-direction: column;
 	}
 }
