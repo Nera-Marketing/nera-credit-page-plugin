@@ -28,9 +28,13 @@ final class Content {
 	 * Each slug has its markup in templates/layouts/<slug>.php.
 	 */
 	const LAYOUTS = array(
-		'guide' => array(
+		'guide'   => array(
 			'label' => 'Guide',
 			'thumb' => 'guide.svg',
+		),
+		'imprint' => array(
+			'label' => 'Imprint',
+			'thumb' => 'imprint.svg',
 		),
 	);
 
