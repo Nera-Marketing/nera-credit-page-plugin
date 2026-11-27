@@ -4,7 +4,7 @@ Tags: nera, credit, competitions
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: Proprietary
 
 Serves the Nera Marketing credit page at the theme's attribution URL while switched on.
