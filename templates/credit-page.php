@@ -71,10 +71,16 @@ if ( ! is_readable( $nera_credit_layout_file ) ) {
 	$nera_credit_layout_file = NERA_CREDIT_PAGE_DIR . 'templates/layouts/' . Content::DEFAULT_LAYOUT . '.php';
 }
 
+// Only values that passed sanitize_hex_color() reach the style attribute.
+$nera_credit_brand    = Content::color( 'primary' );
+$nera_credit_cta_text = Content::color( 'cta_text' );
+$nera_credit_style    = ( '' !== $nera_credit_brand ? '--color-primary:' . $nera_credit_brand . ';' : '' )
+	. ( '' !== $nera_credit_cta_text ? '--ncp-cta-text:' . $nera_credit_cta_text . ';' : '' );
+
 get_header();
 ?>
 
-<main id="main" class="nera-attribution-page nera-credit-page ncp-layout-<?php echo esc_attr( $nera_credit_layout ); ?>" role="main">
+<main id="main" class="nera-attribution-page nera-credit-page ncp-layout-<?php echo esc_attr( $nera_credit_layout ); ?><?php echo '' !== $nera_credit_cta_text ? ' ncp-has-cta-text' : ''; ?>"<?php echo '' !== $nera_credit_style ? ' style="' . esc_attr( $nera_credit_style ) . '"' : ''; ?> role="main">
 <?php require $nera_credit_layout_file; ?>
 </main>
 

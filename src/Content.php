@@ -197,6 +197,18 @@ final class Content {
 	}
 
 	/**
+	 * A colour field's saved value when it is a hex colour, else empty.
+	 *
+	 * @param string $key Colour key: primary or cta_text.
+	 * @return string
+	 */
+	public static function color( $key ) {
+		$saved = get_option( self::OPTION_PREFIX . 'color_' . $key, '' );
+		$hex   = is_string( $saved ) ? sanitize_hex_color( trim( $saved ) ) : '';
+		return is_string( $hex ) ? $hex : '';
+	}
+
+	/**
 	 * Question and answer rows, in order. Never saved shows the default rows; a row missing
 	 * its question or answer is skipped.
 	 *

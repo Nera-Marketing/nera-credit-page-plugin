@@ -103,7 +103,7 @@ defined( 'ABSPATH' ) || exit;
 							<h2 class="ncp-cta__title font-bold text-white leading-tight"><?php echo implode( '<br>', array_map( 'esc_html', $nera_credit_cta_lines ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- each line escaped. ?></h2>
 <?php endif; ?>
 <?php if ( '' !== $nera_credit_subtitle ) : ?>
-							<p class="text-white/70 text-sm font-light"><?php echo esc_html( $nera_credit_subtitle ); ?></p>
+							<p class="ncp-cta__subtitle text-white/70 text-sm font-light"><?php echo esc_html( $nera_credit_subtitle ); ?></p>
 <?php endif; ?>
 						</div>
 <?php endif; ?>
@@ -111,7 +111,7 @@ defined( 'ABSPATH' ) || exit;
 						<div class="ncp-cta__actions">
 							<?php foreach ( $nera_credit_actions as $nera_credit_n => $nera_credit_action ) : ?>
 							<a href="<?php echo esc_url( $nera_credit_action[0] ); ?>" target="_blank" rel="noopener"
-								class="ncp-btn inline-flex items-center justify-center gap-2 text-xs font-bold tracking-widest uppercase rounded-sm border-2 transition-colors <?php echo 0 === $nera_credit_n ? 'bg-surface text-primary border-white hover:bg-surface/90' : 'bg-transparent text-white border-white/40 hover:border-white'; ?>">
+								class="ncp-btn <?php echo 0 === $nera_credit_n ? 'ncp-btn--primary' : 'ncp-btn--ghost'; ?> inline-flex items-center justify-center gap-2 text-xs font-bold tracking-widest uppercase rounded-sm border-2 transition-colors <?php echo 0 === $nera_credit_n ? 'bg-surface text-primary border-white hover:bg-surface/90' : 'bg-transparent text-white border-white/40 hover:border-white'; ?>">
 								<?php echo esc_html( $nera_credit_action[1] ); ?>
 							</a>
 							<?php endforeach; ?>

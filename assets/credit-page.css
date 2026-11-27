@@ -52,6 +52,30 @@
 	margin: 0;
 }
 
+/* CTA text colour: only when the editor sets one (class on main), so the default keeps the
+   theme's white text. Unlayered, so these beat the bundle's utility classes. */
+.nera-credit-page.ncp-has-cta-text .ncp-cta__title,
+.nera-credit-page.ncp-has-cta-text .ncp-cta__subtitle {
+	color: var(--ncp-cta-text);
+}
+
+/* The theme forces a.text-white with !important. */
+.nera-credit-page.ncp-has-cta-text .ncp-btn--ghost {
+	color: var(--ncp-cta-text) !important;
+	border-color: color-mix(in srgb, var(--ncp-cta-text) 40%, transparent);
+}
+
+.nera-credit-page.ncp-has-cta-text .ncp-btn--ghost:hover {
+	border-color: var(--ncp-cta-text);
+}
+
+.nera-credit-page.ncp-has-cta-text .ncp-btn--primary,
+.nera-credit-page.ncp-has-cta-text .ncp-btn--primary:hover {
+	background-color: var(--ncp-cta-text);
+	color: var(--color-primary);
+	border-color: var(--ncp-cta-text);
+}
+
 /* Guide: hero band, then one centred column */
 .ncp-layout-guide .ncp-hero {
 	padding-block: clamp(2.5rem, 6vw, 4.5rem);
